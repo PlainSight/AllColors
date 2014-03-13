@@ -1,5 +1,3 @@
-import java.awt.Color;
-
 public class SuperColor {
 	int x;
 	int y;
