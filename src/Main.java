@@ -30,6 +30,8 @@ public class Main {
 	int sourceColors = 0;
 	SuperColor[] colorSource;
 	
+	Boolean preplace = false;
+	
 	public Main(String[] args) {
 		
 		if(args.length > 1) {
@@ -41,6 +43,10 @@ public class Main {
 			REDBITDEPTH = Integer.parseInt(args[2]);
 			GREENBITDEPTH = Integer.parseInt(args[3]);
 			BLUEBITDEPTH = Integer.parseInt(args[4]);
+		}
+		
+		if(args.length > 5) {
+			preplace = true;
 		}
 		
 		System.out.println("Creating Image with dimensions: " + width + " x " + height);
@@ -68,12 +74,28 @@ public class Main {
 				
 		long aftercolortime = System.currentTimeMillis();
 		
-		//place first pixil
-		SuperColor poppedColour = getNextColor();
-		setPixil(width/2, height/2, poppedColour);
-		edgeColors.add(poppedColour);
+		
+		SuperColor poppedColour;
+		int preplaced = 0;
+		
+		if(preplace) {
+			for(int ix = 0; ix < 10; ix++) {
+				for(int iy = 0; iy < 10; iy++) {
+					preplaced++;
+					poppedColour = getNextColor();
+					setPixil((ix*2 + 1)*width/20, (iy*2 + 1)*height/20, poppedColour);
+					edgeColors.add(poppedColour);
+				}
+			}
+		} else {
+			//place first pixil
+			preplaced++;
+			poppedColour = getNextColor();
+			setPixil(width/2, height/2, poppedColour);
+			edgeColors.add(poppedColour);
+		}
 					
-		for(int counter = 1; counter < topcount; counter++) {
+		for(int counter = preplaced; counter < topcount; counter++) {
 			poppedColour = getNextColor();
 			
 			boolean set = false;
