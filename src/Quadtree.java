@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class Quadtree 
 {
-	static final int maxsize = 128;
+	static final int maxsize = 32;
 	
 	private int xlen;
 	private int ylen;
@@ -56,6 +56,31 @@ public class Quadtree
 		maxz = midz + zlen/2;
 	}
 	
+	public void GetAllColors(Quadtree allColors) {
+		
+		if(size == 0) {
+			return;
+		}
+		
+		for(int i = 0; i < maxsize; i++) {
+			if(colors[i] != null) {
+				if(colors[i].isAlive) {
+					allColors.add(colors[i]);
+				}
+			} else {
+				break;
+			}
+		}
+		
+		if(children[0] == null) {
+			return;
+		}
+		
+		for(int i = 0; i < 8; i++) {
+			children[i].GetAllColors(allColors);
+		}
+	}
+	
 	private void split()
 	{
 		children[0] = new Quadtree(xlen/2,ylen/2,zlen/2, midx - xlen/4, midy - ylen/4, midz - zlen/4, this);
@@ -88,7 +113,7 @@ public class Quadtree
 			if(size < colors.length)
 			{
 				colors[size] = u;
-				u.whereIAm = this;
+				//u.whereIAm = this;
 			} else {
 				split();
 				putInChild(u);
@@ -112,45 +137,45 @@ public class Quadtree
 		return false;
 	}
 	
-	public void remove(SuperColor u)
-	{
-		int index = 0;
-		for(int i = 0; i < size; i++)
-		{
-			if(colors[i] == u)
-			{
-				index = i;
-				break;
-			}
-		}
+	// public void remove(SuperColor u)
+	// {
+		// int index = 0;
+		// for(int i = 0; i < size; i++)
+		// {
+			// if(colors[i] == u)
+			// {
+				// index = i;
+				// break;
+			// }
+		// }
 	
-		colors[index] = colors[size-1];
-		colors[size-1] = null;
+		// colors[index] = colors[size-1];
+		// colors[size-1] = null;
 		
-		for(Quadtree t = this; t != null; t = t.parent)
-		{
-			t.size--;
-			if(t.size < maxsize/2 && t.children[0] != null)
-			{
-				//combine child nodes
-				t.colors = concatAll(t.children[0].size, t.children[0].colors, t.children[1].colors, t.children[2].colors, t.children[3].colors,
-						t.children[4].colors, t.children[5].colors, t.children[6].colors, t.children[7].colors);
-				t.children[0] = null;
-				t.children[1] = null;
-				t.children[2] = null;
-				t.children[3] = null;
-				t.children[4] = null;
-				t.children[5] = null;
-				t.children[6] = null;
-				t.children[7] = null;
+		// for(Quadtree t = this; t != null; t = t.parent)
+		// {
+			// t.size--;
+			// if(t.size < maxsize/2 && t.children[0] != null)
+			// {
+				// //combine child nodes
+				// t.colors = concatAll(t.children[0].size, t.children[0].colors, t.children[1].colors, t.children[2].colors, t.children[3].colors,
+						// t.children[4].colors, t.children[5].colors, t.children[6].colors, t.children[7].colors);
+				// t.children[0] = null;
+				// t.children[1] = null;
+				// t.children[2] = null;
+				// t.children[3] = null;
+				// t.children[4] = null;
+				// t.children[5] = null;
+				// t.children[6] = null;
+				// t.children[7] = null;
 
-				for(int i = 0; i < t.size; i++)
-				{
-					t.colors[i].whereIAm = t;
-				}
-			}
-		}
-	}
+				// for(int i = 0; i < t.size; i++)
+				// {
+					// t.colors[i].whereIAm = t;
+				// }
+			// }
+		// }
+	// }
 	
 	public SuperColor[] concatAll(int offset, SuperColor[] first, SuperColor[]... rest)
 	{
@@ -194,11 +219,11 @@ public class Quadtree
 		{
 			for(int i = 0; i < size; i++)
 			{
-				if(nearest == null)
+				if(nearest == null && colors[i].isAlive)
 				{
 					nearest = colors[i];
 				} else {
-					if(SuperColor.getDist(u, colors[i]) < SuperColor.getDist(u, nearest))
+					if(colors[i].isAlive && SuperColor.getDist(u, colors[i]) < SuperColor.getDist(u, nearest))
 					{
 						nearest = colors[i];
 					}

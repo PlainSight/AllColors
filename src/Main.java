@@ -70,6 +70,8 @@ public class Main {
 		SuperColor poppedColour = getNextColor();
 		setPixil(width/2, height/2, poppedColour);
 		edgeColors.add(poppedColour);
+		
+		int destructed = 0;
 			
 		for(int counter = 1; counter < topcount; counter++) {
 			poppedColour = getNextColor();
@@ -90,19 +92,36 @@ public class Main {
 				miny = miny < 0 ? 0 : miny;
 				maxy = maxy >= height ? height-1 : maxy;
 				
-		outer:	for(int x = minx; x <= maxx; x++) {
+				int numopen = 0;
+				int[][] open = new int[8][2];
+				
+				for(int x = minx; x <= maxx; x++) {
 					for(int y = miny; y <= maxy; y++) {
 						if(getPixil(x, y) == null) {
-							setPixil(x, y, poppedColour);
-							edgeColors.add(poppedColour);
+							open[numopen][0] = x;
+							open[numopen][1] = y;
+							numopen++;
 							set = true;
-							break outer;
 						}
 					}
 				}
 				
+				
+				
+				
 				if(!set) {
 					closestNeighbour.destruct();
+					destructed++;
+					if(destructed > 1000) {
+						cleanQuad();
+						destructed = 0;
+					}
+					
+				} else {
+					int placement = (int) (Math.random()*numopen);
+					
+					setPixil(open[placement][0], open[placement][1], poppedColour);
+					edgeColors.add(poppedColour);
 				}
 			}
 			
@@ -119,6 +138,16 @@ public class Main {
 
 		render(""+topcount);
 		
+	}
+	
+	private void cleanQuad() {
+		
+		Quadtree allColors = new Quadtree(rq, gq, bq, rq/2, gq/2, bq/2, null);
+		
+		edgeColors.GetAllColors(allColors);
+		
+		edgeColors = allColors;
+	
 	}
 	
 	private void render(String label) {
