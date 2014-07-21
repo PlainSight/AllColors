@@ -16,38 +16,40 @@ public class Main {
 	
 	int width = 4096;
 	int height = 4096;
-	int topcount = width*height;
+	int topcount = 0;
 	
-	SuperColor[][] pixilValues = new SuperColor[width][height];
-	
-	int rq = 256;
-	int gq = 256;
-	int bq = 256;
-	
-	Quadtree edgeColors = new Quadtree(rq, gq, bq, rq/2, gq/2, bq/2, null);
+	SuperColor[][] pixilValues;
+		
+	Quadtree edgeColors = new Quadtree(256, 256, 256, 128, 128, 128, null);
 	
 	public static void main(String[] args) {
-		new Main();
+		new Main(args);
 	}
 	
 	int nextColor = 0;
 	int sourceColors = 0;
-	int sizeOfSource = (int) Math.pow(2, REDBITDEPTH) * (int) Math.pow(2, GREENBITDEPTH) * (int) Math.pow(2, BLUEBITDEPTH);
-	SuperColor[] colorSource = new SuperColor[sizeOfSource];
+	SuperColor[] colorSource;
 	
-	private SuperColor getNextColor() {
-		int indexToGet = nextColor + ((int) (Math.random() * (colorSource.length - nextColor)));
+	public Main(String[] args) {
 		
-		SuperColor result = colorSource[indexToGet];
+		if(args.length > 1) {
+			width = Integer.parseInt(args[0]);
+			height = Integer.parseInt(args[1]);
+		}
+	
+		if(args.length > 4) {
+			REDBITDEPTH = Integer.parseInt(args[2]);
+			GREENBITDEPTH = Integer.parseInt(args[3]);
+			BLUEBITDEPTH = Integer.parseInt(args[4]);
+		}
 		
-		colorSource[indexToGet] = colorSource[nextColor];
+		System.out.println("Creating Image with dimensions: " + width + " x " + height);
+		System.out.println("With " + REDBITDEPTH + " " + GREENBITDEPTH + " " + BLUEBITDEPTH + " bit colours");
 		
-		nextColor++;
-		
-		return result;
-	}
-		
-	public Main() {
+		pixilValues = new SuperColor[width][height];
+		topcount = width*height;
+		int sizeOfSource = (int) Math.pow(2, REDBITDEPTH) * (int) Math.pow(2, GREENBITDEPTH) * (int) Math.pow(2, BLUEBITDEPTH);
+		colorSource = new SuperColor[sizeOfSource];
 		
 		long starttime = System.currentTimeMillis();
 		
@@ -70,9 +72,7 @@ public class Main {
 		SuperColor poppedColour = getNextColor();
 		setPixil(width/2, height/2, poppedColour);
 		edgeColors.add(poppedColour);
-		
-		int destructed = 0;
-			
+					
 		for(int counter = 1; counter < topcount; counter++) {
 			poppedColour = getNextColor();
 			
@@ -111,11 +111,11 @@ public class Main {
 				
 				if(!set) {
 					closestNeighbour.destruct();
-					destructed++;
-					if(destructed > 1000) {
-						cleanQuad();
-						destructed = 0;
-					}
+					// destructed++;
+					// if(destructed > 1000) {
+						// cleanQuad();
+						// destructed = 0;
+					// }
 					
 				} else {
 					int placement = (int) (Math.random()*numopen);
@@ -140,15 +140,27 @@ public class Main {
 		
 	}
 	
-	private void cleanQuad() {
+	private SuperColor getNextColor() {
+		int indexToGet = nextColor + ((int) (Math.random() * (colorSource.length - nextColor)));
 		
-		Quadtree allColors = new Quadtree(rq, gq, bq, rq/2, gq/2, bq/2, null);
+		SuperColor result = colorSource[indexToGet];
 		
-		edgeColors.GetAllColors(allColors);
+		colorSource[indexToGet] = colorSource[nextColor];
 		
-		edgeColors = allColors;
-	
+		nextColor++;
+		
+		return result;
 	}
+	
+	// private void cleanQuad() {
+		
+		// Quadtree allColors = new Quadtree(rq, gq, bq, rq/2, gq/2, bq/2, null);
+		
+		// edgeColors.GetAllColors(allColors);
+		
+		// edgeColors = allColors;
+	
+	// }
 	
 	private void render(String label) {
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);

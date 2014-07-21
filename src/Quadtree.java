@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class Quadtree 
 {
-	static final int maxsize = 32;
+	static final int maxsize = 8;
 	
 	private int xlen;
 	private int ylen;
@@ -113,7 +113,7 @@ public class Quadtree
 			if(size < colors.length)
 			{
 				colors[size] = u;
-				//u.whereIAm = this;
+				u.whereIAm = this;
 			} else {
 				split();
 				putInChild(u);
@@ -137,45 +137,45 @@ public class Quadtree
 		return false;
 	}
 	
-	// public void remove(SuperColor u)
-	// {
-		// int index = 0;
-		// for(int i = 0; i < size; i++)
-		// {
-			// if(colors[i] == u)
-			// {
-				// index = i;
-				// break;
-			// }
-		// }
+	public void remove(SuperColor u)
+	{
+		int index = 0;
+		for(int i = 0; i < size; i++)
+		{
+			if(colors[i] == u)
+			{
+				index = i;
+				break;
+			}
+		}
 	
-		// colors[index] = colors[size-1];
-		// colors[size-1] = null;
+		colors[index] = colors[size-1];
+		colors[size-1] = null;
 		
-		// for(Quadtree t = this; t != null; t = t.parent)
-		// {
-			// t.size--;
-			// if(t.size < maxsize/2 && t.children[0] != null)
-			// {
-				// //combine child nodes
-				// t.colors = concatAll(t.children[0].size, t.children[0].colors, t.children[1].colors, t.children[2].colors, t.children[3].colors,
-						// t.children[4].colors, t.children[5].colors, t.children[6].colors, t.children[7].colors);
-				// t.children[0] = null;
-				// t.children[1] = null;
-				// t.children[2] = null;
-				// t.children[3] = null;
-				// t.children[4] = null;
-				// t.children[5] = null;
-				// t.children[6] = null;
-				// t.children[7] = null;
+		for(Quadtree t = this; t != null; t = t.parent)
+		{
+			t.size--;
+			if(t.size < maxsize/2 && t.children[0] != null)
+			{
+				//combine child nodes
+				t.colors = concatAll(t.children[0].size, t.children[0].colors, t.children[1].colors, t.children[2].colors, t.children[3].colors,
+						t.children[4].colors, t.children[5].colors, t.children[6].colors, t.children[7].colors);
+				t.children[0] = null;
+				t.children[1] = null;
+				t.children[2] = null;
+				t.children[3] = null;
+				t.children[4] = null;
+				t.children[5] = null;
+				t.children[6] = null;
+				t.children[7] = null;
 
-				// for(int i = 0; i < t.size; i++)
-				// {
-					// t.colors[i].whereIAm = t;
-				// }
-			// }
-		// }
-	// }
+				for(int i = 0; i < t.size; i++)
+				{
+					t.colors[i].whereIAm = t;
+				}
+			}
+		}
+	}
 	
 	public SuperColor[] concatAll(int offset, SuperColor[] first, SuperColor[]... rest)
 	{
