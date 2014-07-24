@@ -152,7 +152,7 @@ public class Main {
 			}
 			
 			if(counter % (topcount / 100) == 0) {
-				System.out.print("\r" + (counter / (topcount / 100)) + "%");
+				System.out.print("\r" + (counter / (topcount / 100)) + "%\t" + (System.currentTimeMillis() - aftercolortime)/1000 + "s");
 			}
 			
 //			if(counter % 10000 == 0) {

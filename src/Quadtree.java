@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class Quadtree 
 {
-	static final int maxsize = 8;
+	static final int maxsize = 24;
 	
 	private int xlen;
 	private int ylen;
@@ -82,15 +82,23 @@ public class Quadtree
 	}
 	
 	private void split()
-	{
-		children[0] = new Quadtree(xlen/2,ylen/2,zlen/2, midx - xlen/4, midy - ylen/4, midz - zlen/4, this);
-		children[1] = new Quadtree(xlen/2,ylen/2,zlen/2, midx + xlen/4, midy - ylen/4, midz - zlen/4, this);
-		children[2] = new Quadtree(xlen/2,ylen/2,zlen/2, midx - xlen/4, midy + ylen/4, midz - zlen/4, this);
-		children[3] = new Quadtree(xlen/2,ylen/2,zlen/2, midx - xlen/4, midy - ylen/4, midz + zlen/4, this);
-		children[4] = new Quadtree(xlen/2,ylen/2,zlen/2, midx + xlen/4, midy + ylen/4, midz - zlen/4, this);
-		children[5] = new Quadtree(xlen/2,ylen/2,zlen/2, midx - xlen/4, midy + ylen/4, midz + zlen/4, this);
-		children[6] = new Quadtree(xlen/2,ylen/2,zlen/2, midx + xlen/4, midy - ylen/4, midz + zlen/4, this);
-		children[7] = new Quadtree(xlen/2,ylen/2,zlen/2, midx + xlen/4, midy + ylen/4, midz + zlen/4, this);
+	{	
+		int xlenover4 = xlen/4;
+		int ylenover4 = ylen/4;
+		int zlenover4 = zlen/4;
+		
+		int xlenover2 = xlen/2;
+		int ylenover2 = ylen/2;
+		int zlenover2 = zlen/2;
+	
+		children[0] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy - ylenover4, midz - zlenover4, this);
+		children[1] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy - ylenover4, midz - zlenover4, this);
+		children[2] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy + ylenover4, midz - zlenover4, this);
+		children[3] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy - ylenover4, midz + zlenover4, this);
+		children[4] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy + ylenover4, midz - zlenover4, this);
+		children[5] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy + ylenover4, midz + zlenover4, this);
+		children[6] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy - ylenover4, midz + zlenover4, this);
+		children[7] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy + ylenover4, midz + zlenover4, this);
 		
 		//put the nodes in children nodes
 		for(int i = 0; i < maxsize; i++)
@@ -99,7 +107,7 @@ public class Quadtree
 		}
 
 		//clean up node
-		colors = new SuperColor[8];
+		colors = new SuperColor[maxsize];
 	}
 		
 	public void add(SuperColor u)
@@ -160,14 +168,7 @@ public class Quadtree
 				//combine child nodes
 				t.colors = concatAll(t.children[0].size, t.children[0].colors, t.children[1].colors, t.children[2].colors, t.children[3].colors,
 						t.children[4].colors, t.children[5].colors, t.children[6].colors, t.children[7].colors);
-				t.children[0] = null;
-				t.children[1] = null;
-				t.children[2] = null;
-				t.children[3] = null;
-				t.children[4] = null;
-				t.children[5] = null;
-				t.children[6] = null;
-				t.children[7] = null;
+				t.children = new Quadtree[8];
 
 				for(int i = 0; i < t.size; i++)
 				{
@@ -204,7 +205,12 @@ public class Quadtree
 	
 	public boolean shouldVisit(SuperColor u, SuperColor nearest)
 	{
-		double distancesqr = Math.pow(u.r - midx, 2) + Math.pow(u.g - midy, 2) + Math.pow(u.b - midz, 2) - Math.pow(0.71*xlen, 2);
+		int aa = u.r - midx;
+		int bb = u.g - midy;
+		int cc = u.b - midz;
+		double dd = 0.71*xlen;
+	
+		double distancesqr = (aa*aa + bb*bb + cc*cc) - dd*dd;
 		
 		return (SuperColor.getDist(u, nearest) > distancesqr);
 	}	
