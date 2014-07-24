@@ -99,7 +99,7 @@ public class Quadtree
 		}
 
 		//clean up node
-		colors = new SuperColor[4];
+		colors = new SuperColor[8];
 	}
 		
 	public void add(SuperColor u)

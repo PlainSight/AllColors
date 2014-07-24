@@ -30,8 +30,6 @@ public class Main {
 	int sourceColors = 0;
 	SuperColor[] colorSource;
 	
-	Boolean preplace = false;
-	
 	public Main(String[] args) {
 		
 		if(args.length > 1) {
@@ -45,8 +43,14 @@ public class Main {
 			BLUEBITDEPTH = Integer.parseInt(args[4]);
 		}
 		
-		if(args.length > 5) {
+		Boolean preplace = false;
+		int preplacex = 0;
+		int preplacey = 0;
+		
+		if(args.length > 6) {
 			preplace = true;
+			preplacex = Integer.parseInt(args[5]);
+			preplacey = Integer.parseInt(args[6]);
 		}
 		
 		System.out.println("Creating Image with dimensions: " + width + " x " + height);
@@ -79,11 +83,11 @@ public class Main {
 		int preplaced = 0;
 		
 		if(preplace) {
-			for(int ix = 0; ix < 10; ix++) {
-				for(int iy = 0; iy < 10; iy++) {
+			for(int ix = 0; ix < preplacex; ix++) {
+				for(int iy = 0; iy < preplacey; iy++) {
 					preplaced++;
 					poppedColour = getNextColor();
-					setPixil((ix*2 + 1)*width/20, (iy*2 + 1)*height/20, poppedColour);
+					setPixil((ix*2 + 1)*width/(2*preplacex), (iy*2 + 1)*height/(2*preplacey), poppedColour);
 					edgeColors.add(poppedColour);
 				}
 			}
@@ -147,6 +151,9 @@ public class Main {
 				}
 			}
 			
+			if(counter % (topcount / 100) == 0) {
+				System.out.print("\r" + (counter / (topcount / 100)) + "%");
+			}
 			
 //			if(counter % 10000 == 0) {
 //				render(""+counter);
@@ -154,9 +161,9 @@ public class Main {
 		}
 		
 		long finishtime = System.currentTimeMillis();
-		
-		System.out.println("Start up time: " + (aftercolortime - starttime));
-		System.out.println("Calculation time: " + (finishtime - aftercolortime));
+		System.out.print("\r100%\n");
+		System.out.println("Start up time: " + (aftercolortime - starttime) + "ms");
+		System.out.println("Calculation time: " + (finishtime - aftercolortime) + "ms");
 
 		render(""+topcount);
 		
