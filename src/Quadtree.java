@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class Quadtree 
 {
-	static final int maxsize = 24;
+	static final int maxsize = 32;
 	
 	private int xlen;
 	private int ylen;

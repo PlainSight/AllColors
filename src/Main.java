@@ -155,9 +155,9 @@ public class Main {
 				System.out.print("\r" + (counter / (topcount / 100)) + "%\t" + (System.currentTimeMillis() - aftercolortime)/1000 + "s");
 			}
 			
-//			if(counter % 10000 == 0) {
-//				render(""+counter);
-//			}
+			// if(counter % 100000 == 0) {
+			// 	render(""+counter);
+			// }
 		}
 		
 		long finishtime = System.currentTimeMillis();
