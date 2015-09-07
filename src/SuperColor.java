@@ -3,16 +3,12 @@ public class SuperColor {
 	int x;
 	int y;
 	
-	int r;
-	int g;
-	int b;
+	int rgb;
 	
 	Quadtree whereIAm;
 	
-	public SuperColor(int red, int green, int blue) {
-		r = red;
-		g = green;
-		b = blue;
+	public SuperColor(int trgb) {
+		rgb = trgb;
 	}
 	
 	public void destruct() {
@@ -20,9 +16,10 @@ public class SuperColor {
 	}
 	
 	public static int getDist(SuperColor color1, SuperColor color2) {
-		int rd = color1.r - color2.r;
-		int gd = color1.g - color2.g;
-		int bd = color1.b - color2.b;
+		int sub = color1.rgb - color2.rgb;
+		int rd = (sub & 0x00FF0000) >> 16;
+		int gd = (sub & 0x0000FF00) >> 8;
+		int bd = sub & 0x000000FF;
 	
 		return (rd*rd) + (gd*gd) + (bd*bd);
 	}

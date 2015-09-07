@@ -186,16 +186,21 @@ public class Quadtree
 	
 	//checks whether a given unit would be inside the bounds of this quad
 	public boolean hasUnitInside(SuperColor u)
-	{	
-		return (minx <= u.r && u.r < maxx && miny <= u.g && u.g < maxy && minz <= u.b && u.b < maxz);
+	{
+		int red = (u.rgb & 0x00FF0000) >> 16;
+		int green = (u.rgb & 0x0000FF00) >> 8;
+		int blue = (u.rgb & 0x000000FF);
+
+		return (minx <= red && red < maxx && miny <= green
+		 && green < maxy && minz <= blue && blue < maxz);
 	}
 	
 	
 	public boolean shouldVisit(SuperColor u, SuperColor nearest)
 	{
-		int aa = u.r - midx;
-		int bb = u.g - midy;
-		int cc = u.b - midz;
+		int aa = (u.rgb & 0x00FF0000) >> 16 - midx;
+		int bb = (u.rgb & 0x0000FF00) >> 8 - midy;
+		int cc = (u.rgb & 0x000000FF) - midz;
 		double dd = 0.71*xlen;
 	
 		double distancesqr = (aa*aa + bb*bb + cc*cc) - dd*dd;

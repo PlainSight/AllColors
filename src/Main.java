@@ -71,7 +71,7 @@ public class Main {
 		for(int r = 0; r < 256; r += redinc) {
 			for(int g = 0; g < 256; g += greeninc) {
 				for(int b = 0; b < 256; b += blueinc) {
-					colorSource[sourceColors++] = (new SuperColor(r, g, b));
+					colorSource[sourceColors++] = (new SuperColor((r * 256 * 256) + (g * 256) + b));
 				}
 			}
 		}
@@ -191,7 +191,7 @@ public class Main {
 			for(int drawy = 0; drawy < height; drawy++) {
 				SuperColor elem = pixilValues[drawx][drawy];
 				if(elem != null) {
-					g2.setColor(new Color(elem.r, elem.g, elem.b));
+					g2.setColor(new Color(elem.rgb));
 				} else {
 					g2.setColor(Color.black);
 				}
