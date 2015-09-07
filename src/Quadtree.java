@@ -34,7 +34,7 @@ public class Quadtree
 	private Quadtree parent;
 	private Quadtree[] children = new Quadtree[8];
 	
-	Boolean noPop = false;
+	Boolean hasChildren = false;
 	
 	public Quadtree(int x, int y, int z, int mx, int my, int mz, Quadtree p)
 	{
@@ -102,14 +102,7 @@ public class Quadtree
 			children[7] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy + ylenover4, midz + zlenover4, this);
 		}
 
-		children[0].noPop = false;
-		children[1].noPop = false;
-		children[2].noPop = false;
-		children[3].noPop = false;
-		children[4].noPop = false;
-		children[5].noPop = false;
-		children[6].noPop = false;
-		children[7].noPop = false;
+		hasChildren = true;
 		
 		//put the nodes in children nodes
 		for(int i = 0; i < maxsize; i++)
@@ -125,7 +118,7 @@ public class Quadtree
 	{
 		//if there are children then add to child
 		
-		if(children[0] != null && children[0].noPop == false)
+		if(hasChildren)
 		{
 			putInChild(u);
 		} else {
@@ -158,18 +151,15 @@ public class Quadtree
 	
 	public void remove(SuperColor u)
 	{
-		int index = 0;
 		for(int i = 0; i < size; i++)
 		{
 			if(colors[i] == u)
 			{
-				index = i;
+				colors[i] = colors[size-1];
 				break;
 			}
 		}
-	
-		colors[index] = colors[size-1];
-		colors[size-1] = null;
+		
 		
 		for(Quadtree t = this; t != null; t = t.parent)
 		{
@@ -182,23 +172,16 @@ public class Quadtree
 					t.children[5].size, t.children[6].size, t.children[7].size },
 					new SuperColor[][] { t.children[1].colors, t.children[2].colors, t.children[3].colors, t.children[4].colors,
 					t.children[5].colors, t.children[6].colors, t.children[7].colors });
-
+				
+				t.hasChildren = false;
 				t.children[0].size = 0;
-				t.children[0].noPop = true;
 				t.children[1].size = 0;
-				t.children[1].noPop = true;
 				t.children[2].size = 0;
-				t.children[2].noPop = true;
 				t.children[3].size = 0;
-				t.children[3].noPop = true;
 				t.children[4].size = 0;
-				t.children[4].noPop = true;
 				t.children[5].size = 0;
-				t.children[5].noPop = true;
 				t.children[6].size = 0;
-				t.children[6].noPop = true;
 				t.children[7].size = 0;
-				t.children[7].noPop = true;
 
 				for(int i = 0; i < t.size; i++)
 				{
@@ -249,7 +232,7 @@ public class Quadtree
 			return nearest;
 		}
 		
-		if(children[0] == null || children[0].noPop)
+		if(!hasChildren)
 		{
 			for(int i = 0; i < size; i++)
 			{
