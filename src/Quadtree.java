@@ -1,4 +1,3 @@
-
 import java.util.Arrays;
 
 
@@ -86,9 +85,6 @@ public class Quadtree
 		{
 			putInChild(colors[i]);
 		}
-
-		//clean up node
-		colors = new SuperColor[maxsize];
 	}
 		
 	public void add(SuperColor u)
@@ -143,13 +139,27 @@ public class Quadtree
 			t.size--;
 			if(t.size < maxsize/2 && t.hasChildren)
 			{
+				superColorArraySizes[0] = t.children[0].size;
+				superColorArraySizes[1] = t.children[1].size;
+				superColorArraySizes[2] = t.children[2].size;
+				superColorArraySizes[3] = t.children[3].size;
+				superColorArraySizes[4] = t.children[4].size;
+				superColorArraySizes[5] = t.children[5].size;
+				superColorArraySizes[6] = t.children[6].size;
+				superColorArraySizes[7] = t.children[7].size;
+
+				superColorArray[0] = t.children[0].colors;
+				superColorArray[1] = t.children[1].colors;
+				superColorArray[2] = t.children[2].colors;
+				superColorArray[3] = t.children[3].colors;
+				superColorArray[4] = t.children[4].colors;
+				superColorArray[5] = t.children[5].colors;
+				superColorArray[6] = t.children[6].colors;
+				superColorArray[7] = t.children[7].colors;
+
 				//combine child nodes
-				t.colors = concatAll(t.children[0].size, t.children[0].colors, 
-					new int[] { t.children[1].size, t.children[2].size, t.children[3].size, t.children[4].size,
-					t.children[5].size, t.children[6].size, t.children[7].size },
-					new SuperColor[][] { t.children[1].colors, t.children[2].colors, t.children[3].colors, t.children[4].colors,
-					t.children[5].colors, t.children[6].colors, t.children[7].colors });
-				
+				t.colors = concatAll();
+
 				t.hasChildren = false;
 				t.children[0].size = 0;
 				t.children[1].size = 0;
@@ -167,18 +177,21 @@ public class Quadtree
 			}
 		}
 	}
+
+	private static SuperColor[][] superColorArray = new SuperColor[8][];
+	private static int[] superColorArraySizes = new int[8];
 	
-	public SuperColor[] concatAll(int offset, SuperColor[] first, int[] sizes, SuperColor[][] rest)
+	public SuperColor[] concatAll()
 	{
-		SuperColor[] result = first;
-		int s = 0;
-		for (int cc = 0; cc < 7; cc++) {
-			int size = sizes[s++];
+		int offset = superColorArraySizes[0];
+		SuperColor[] result = superColorArray[0];
+		for (int cc = 1; cc < 8; cc++) {
+			int size = superColorArraySizes[cc];
 
 			int i = 0;
 			while(i < size)
 			{
-				result[offset++] = rest[cc][i++];
+				result[offset++] = superColorArray[cc][i++];
 			}
 		}
 		return result;

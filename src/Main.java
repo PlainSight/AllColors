@@ -29,6 +29,8 @@ public class Main {
 	int nextColor = 0;
 	int sourceColors = 0;
 	SuperColor[] colorSource;
+
+	private static int[][] openSpaces = new int[8][2];
 	
 	public Main(String[] args) {
 		
@@ -71,7 +73,7 @@ public class Main {
 		for(int r = 0; r < 256; r += redinc) {
 			for(int g = 0; g < 256; g += greeninc) {
 				for(int b = 0; b < 256; b += blueinc) {
-					colorSource[sourceColors++] = (new SuperColor(r, g, b));
+					colorSource[sourceColors++] = new SuperColor(r, g, b);
 				}
 			}
 		}
@@ -121,13 +123,13 @@ public class Main {
 				maxy = maxy >= height ? height-1 : maxy;
 				
 				int numopen = 0;
-				int[][] open = new int[8][2];
+				
 				
 				for(int x = minx; x <= maxx; x++) {
 					for(int y = miny; y <= maxy; y++) {
 						if(pixilValues[x][y] == null) {
-							open[numopen][0] = x;
-							open[numopen][1] = y;
+							openSpaces[numopen][0] = x;
+							openSpaces[numopen][1] = y;
 							numopen++;
 							set = true;
 						}
@@ -148,7 +150,7 @@ public class Main {
 				} else {
 					int placement = pseudoRandom++ % numopen;
 					
-					setPixil(open[placement][0], open[placement][1], poppedColour);
+					setPixil(openSpaces[placement][0], openSpaces[placement][1], poppedColour);
 					edgeColors.add(poppedColour);
 				}
 			}
