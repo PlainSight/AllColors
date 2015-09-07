@@ -183,16 +183,6 @@ public class Main {
 		return result;
 	}
 	
-	// private void cleanQuad() {
-		
-		// Quadtree allColors = new Quadtree(rq, gq, bq, rq/2, gq/2, bq/2, null);
-		
-		// edgeColors.GetAllColors(allColors);
-		
-		// edgeColors = allColors;
-	
-	// }
-	
 	private void render(String label) {
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = image.createGraphics();

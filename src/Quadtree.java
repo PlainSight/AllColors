@@ -58,29 +58,6 @@ public class Quadtree
 		maxz = midz + zlen/2;
 	}
 	
-	public void GetAllColors(Quadtree allColors) {
-		
-		if(size == 0) {
-			return;
-		}
-		
-		for(int i = 0; i < maxsize; i++) {
-			if(colors[i] != null) {
-				allColors.add(colors[i]);
-			} else {
-				break;
-			}
-		}
-		
-		if(children[0] == null) {
-			return;
-		}
-		
-		for(int i = 0; i < 8; i++) {
-			children[i].GetAllColors(allColors);
-		}
-	}
-	
 	private void split()
 	{	
 		int xlenover4 = xlen/4;
@@ -164,7 +141,7 @@ public class Quadtree
 		for(Quadtree t = this; t != null; t = t.parent)
 		{
 			t.size--;
-			if(t.size < maxsize/2 && t.children[0] != null)
+			if(t.size < maxsize/2 && t.hasChildren)
 			{
 				//combine child nodes
 				t.colors = concatAll(t.children[0].size, t.children[0].colors, 
@@ -223,12 +200,12 @@ public class Quadtree
 	
 		double distancesqr = (aa*aa + bb*bb + cc*cc) - dd*dd;
 		
-		return (SuperColor.getDist(u, nearest) > distancesqr);
+		return SuperColor.getDist(u, nearest) > distancesqr;
 	}	
 	
 	public SuperColor findNearest(SuperColor u, SuperColor nearest)
 	{
-		if((nearest != null && !shouldVisit(u, nearest)) || size == 0) {
+		if(size == 0 || (nearest != null && !shouldVisit(u, nearest))) {
 			return nearest;
 		}
 		
