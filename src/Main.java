@@ -98,13 +98,13 @@ public class Main {
 			setPixil(width/2, height/2, poppedColour);
 			edgeColors.add(poppedColour);
 		}
+
+		int pseudoRandom = 0;
 					
 		for(int counter = preplaced; counter < topcount; counter++) {
 			poppedColour = getNextColor();
 			
 			boolean set = false;
-			
-			int pseudoRandom = 0;
 
 			while(!set) {
 				
@@ -146,8 +146,7 @@ public class Main {
 					// }
 					
 				} else {
-					int placement = pseudoRandom % numopen;
-					pseudoRandom += counter;
+					int placement = pseudoRandom++ % numopen;
 					
 					setPixil(open[placement][0], open[placement][1], poppedColour);
 					edgeColors.add(poppedColour);
