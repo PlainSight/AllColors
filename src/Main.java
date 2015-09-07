@@ -104,6 +104,8 @@ public class Main {
 			
 			boolean set = false;
 			
+			int pseudoRandom = 0;
+
 			while(!set) {
 				
 				SuperColor closestNeighbour = edgeColors.findNearest(poppedColour, null);
@@ -123,7 +125,7 @@ public class Main {
 				
 				for(int x = minx; x <= maxx; x++) {
 					for(int y = miny; y <= maxy; y++) {
-						if(getPixil(x, y) == null) {
+						if(pixilValues[x][y] == null) {
 							open[numopen][0] = x;
 							open[numopen][1] = y;
 							numopen++;
@@ -144,7 +146,8 @@ public class Main {
 					// }
 					
 				} else {
-					int placement = (int) (Math.random()*numopen);
+					int placement = pseudoRandom % numopen;
+					pseudoRandom += counter;
 					
 					setPixil(open[placement][0], open[placement][1], poppedColour);
 					edgeColors.add(poppedColour);
@@ -197,7 +200,7 @@ public class Main {
 		
 		for(int drawx = 0; drawx < width; drawx++) {			
 			for(int drawy = 0; drawy < height; drawy++) {
-				SuperColor elem = getPixil(drawx, drawy);
+				SuperColor elem = pixilValues[drawx][drawy];
 				if(elem != null) {
 					g2.setColor(new Color(elem.r, elem.g, elem.b));
 				} else {
@@ -221,9 +224,5 @@ public class Main {
 		sc.x = x;
 		sc.y = y;
 		pixilValues[x][y] = sc;
-	}
-	
-	private SuperColor getPixil(int x, int y) {
-		return pixilValues[x][y];
 	}
 }

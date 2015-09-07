@@ -9,8 +9,6 @@ public class SuperColor {
 	
 	Quadtree whereIAm;
 	
-	Boolean isAlive = true;
-	
 	public SuperColor(int red, int green, int blue) {
 		r = red;
 		g = green;
@@ -18,12 +16,7 @@ public class SuperColor {
 	}
 	
 	public void destruct() {
-	
-		isAlive = false;
-		
-		if(whereIAm != null) {			
-			whereIAm.remove(this);
-		}
+		whereIAm.remove(this);
 	}
 	
 	public static int getDist(SuperColor color1, SuperColor color2) {

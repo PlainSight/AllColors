@@ -34,6 +34,8 @@ public class Quadtree
 	private Quadtree parent;
 	private Quadtree[] children = new Quadtree[8];
 	
+	Boolean noPop = false;
+	
 	public Quadtree(int x, int y, int z, int mx, int my, int mz, Quadtree p)
 	{
 		xlen = x;
@@ -64,9 +66,7 @@ public class Quadtree
 		
 		for(int i = 0; i < maxsize; i++) {
 			if(colors[i] != null) {
-				if(colors[i].isAlive) {
-					allColors.add(colors[i]);
-				}
+				allColors.add(colors[i]);
 			} else {
 				break;
 			}
@@ -91,14 +91,25 @@ public class Quadtree
 		int ylenover2 = ylen/2;
 		int zlenover2 = zlen/2;
 	
-		children[0] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy - ylenover4, midz - zlenover4, this);
-		children[1] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy - ylenover4, midz - zlenover4, this);
-		children[2] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy + ylenover4, midz - zlenover4, this);
-		children[3] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy - ylenover4, midz + zlenover4, this);
-		children[4] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy + ylenover4, midz - zlenover4, this);
-		children[5] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy + ylenover4, midz + zlenover4, this);
-		children[6] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy - ylenover4, midz + zlenover4, this);
-		children[7] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy + ylenover4, midz + zlenover4, this);
+		if(children[0] == null) {
+			children[0] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy - ylenover4, midz - zlenover4, this);
+			children[1] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy - ylenover4, midz - zlenover4, this);
+			children[2] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy + ylenover4, midz - zlenover4, this);
+			children[3] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy - ylenover4, midz + zlenover4, this);
+			children[4] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy + ylenover4, midz - zlenover4, this);
+			children[5] = new Quadtree(xlenover2,ylenover2,zlenover2, midx - xlenover4, midy + ylenover4, midz + zlenover4, this);
+			children[6] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy - ylenover4, midz + zlenover4, this);
+			children[7] = new Quadtree(xlenover2,ylenover2,zlenover2, midx + xlenover4, midy + ylenover4, midz + zlenover4, this);
+		}
+
+		children[0].noPop = false;
+		children[1].noPop = false;
+		children[2].noPop = false;
+		children[3].noPop = false;
+		children[4].noPop = false;
+		children[5].noPop = false;
+		children[6].noPop = false;
+		children[7].noPop = false;
 		
 		//put the nodes in children nodes
 		for(int i = 0; i < maxsize; i++)
@@ -114,7 +125,7 @@ public class Quadtree
 	{
 		//if there are children then add to child
 		
-		if(children[0] != null)
+		if(children[0] != null && children[0].noPop == false)
 		{
 			putInChild(u);
 		} else {
@@ -166,9 +177,28 @@ public class Quadtree
 			if(t.size < maxsize/2 && t.children[0] != null)
 			{
 				//combine child nodes
-				t.colors = concatAll(t.children[0].size, t.children[0].colors, t.children[1].colors, t.children[2].colors, t.children[3].colors,
-						t.children[4].colors, t.children[5].colors, t.children[6].colors, t.children[7].colors);
-				t.children = new Quadtree[8];
+				t.colors = concatAll(t.children[0].size, t.children[0].colors, 
+					new int[] { t.children[1].size, t.children[2].size, t.children[3].size, t.children[4].size,
+					t.children[5].size, t.children[6].size, t.children[7].size },
+					new SuperColor[][] { t.children[1].colors, t.children[2].colors, t.children[3].colors, t.children[4].colors,
+					t.children[5].colors, t.children[6].colors, t.children[7].colors });
+
+				t.children[0].size = 0;
+				t.children[0].noPop = true;
+				t.children[1].size = 0;
+				t.children[1].noPop = true;
+				t.children[2].size = 0;
+				t.children[2].noPop = true;
+				t.children[3].size = 0;
+				t.children[3].noPop = true;
+				t.children[4].size = 0;
+				t.children[4].noPop = true;
+				t.children[5].size = 0;
+				t.children[5].noPop = true;
+				t.children[6].size = 0;
+				t.children[6].noPop = true;
+				t.children[7].size = 0;
+				t.children[7].noPop = true;
 
 				for(int i = 0; i < t.size; i++)
 				{
@@ -178,19 +208,17 @@ public class Quadtree
 		}
 	}
 	
-	public SuperColor[] concatAll(int offset, SuperColor[] first, SuperColor[]... rest)
+	public SuperColor[] concatAll(int offset, SuperColor[] first, int[] sizes, SuperColor[][] rest)
 	{
-		SuperColor[] result = Arrays.copyOf(first, maxsize);
-		for (SuperColor[] array : rest) {
-			if(array.length == 0) continue;
+		SuperColor[] result = first;
+		int s = 0;
+		for (int cc = 0; cc < 7; cc++) {
+			int size = sizes[s++];
+
 			int i = 0;
-	inner:	while(i < array.length)
+			while(i < size)
 			{
-				if(array[i] == null)
-				{
-					break inner;
-				}
-				result[offset++] = array[i++];
+				result[offset++] = rest[cc][i++];
 			}
 		}
 		return result;
@@ -221,15 +249,15 @@ public class Quadtree
 			return nearest;
 		}
 		
-		if(children[0] == null)
+		if(children[0] == null || children[0].noPop)
 		{
 			for(int i = 0; i < size; i++)
 			{
-				if(nearest == null && colors[i].isAlive)
+				if(nearest == null)
 				{
 					nearest = colors[i];
 				} else {
-					if(colors[i].isAlive && SuperColor.getDist(u, colors[i]) < SuperColor.getDist(u, nearest))
+					if(SuperColor.getDist(u, colors[i]) < SuperColor.getDist(u, nearest))
 					{
 						nearest = colors[i];
 					}
