@@ -1,6 +1,3 @@
-import java.util.Arrays;
-
-
 /* This class is made to ease the task of finding targets
  * each unit held within should update itself regularly.
  */
@@ -85,6 +82,9 @@ public class Quadtree
 		{
 			putInChild(colors[i]);
 		}
+
+		//clean up node
+		colors = new SuperColor[maxsize];
 	}
 		
 	public void add(SuperColor u)
@@ -137,66 +137,29 @@ public class Quadtree
 		for(Quadtree t = this; t != null; t = t.parent)
 		{
 			t.size--;
+			
 			if(t.size < maxsize/2 && t.hasChildren)
 			{
-				superColorArraySizes[0] = t.children[0].size;
-				superColorArraySizes[1] = t.children[1].size;
-				superColorArraySizes[2] = t.children[2].size;
-				superColorArraySizes[3] = t.children[3].size;
-				superColorArraySizes[4] = t.children[4].size;
-				superColorArraySizes[5] = t.children[5].size;
-				superColorArraySizes[6] = t.children[6].size;
-				superColorArraySizes[7] = t.children[7].size;
-
-				superColorArray[0] = t.children[0].colors;
-				superColorArray[1] = t.children[1].colors;
-				superColorArray[2] = t.children[2].colors;
-				superColorArray[3] = t.children[3].colors;
-				superColorArray[4] = t.children[4].colors;
-				superColorArray[5] = t.children[5].colors;
-				superColorArray[6] = t.children[6].colors;
-				superColorArray[7] = t.children[7].colors;
-
-				//combine child nodes
-				t.colors = concatAll();
-
-				t.hasChildren = false;
-				t.children[0].size = 0;
-				t.children[1].size = 0;
-				t.children[2].size = 0;
-				t.children[3].size = 0;
-				t.children[4].size = 0;
-				t.children[5].size = 0;
-				t.children[6].size = 0;
-				t.children[7].size = 0;
+				int tColorIndex = 0;
+				
+				for(int i = 0; i < 8; i++) {
+					for (int j = 0; j < t.children[i].size; j++) {
+						t.colors[tColorIndex++] = t.children[i].colors[j];
+					}
+					t.children[i].hasChildren = false;
+					t.children[i].size = 0;
+				}
 
 				for(int i = 0; i < t.size; i++)
 				{
 					t.colors[i].whereIAm = t;
 				}
+				
+				t.hasChildren = false;
 			}
 		}
 	}
-
-	private static SuperColor[][] superColorArray = new SuperColor[8][];
-	private static int[] superColorArraySizes = new int[8];
-	
-	public SuperColor[] concatAll()
-	{
-		int offset = superColorArraySizes[0];
-		SuperColor[] result = superColorArray[0];
-		for (int cc = 1; cc < 8; cc++) {
-			int size = superColorArraySizes[cc];
-
-			int i = 0;
-			while(i < size)
-			{
-				result[offset++] = superColorArray[cc][i++];
-			}
-		}
-		return result;
-	}
-	
+		
 	//checks whether a given unit would be inside the bounds of this quad
 	public boolean hasUnitInside(SuperColor u)
 	{	
@@ -206,12 +169,20 @@ public class Quadtree
 	
 	public boolean shouldVisit(SuperColor u, SuperColor nearest)
 	{
-		int aa = u.r - midx;
-		int bb = u.g - midy;
-		int cc = u.b - midz;
-		double dd = 0.71*xlen;
-	
-		double distancesqr = (aa*aa + bb*bb + cc*cc) - dd*dd;
+		int cx = (u.r < midx ? 1 : 0) * minx + (u.r > midx ? 1 : 0) * maxx;
+		int cy = (u.g < midy ? 1 : 0) * miny + (u.g > midy ? 1 : 0) * maxy;
+		int cz = (u.b < midz ? 1 : 0) * minz + (u.b > midz ? 1 : 0) * maxz;
+
+		int isoutx = (u.r >= maxx ? 1 : 0) | (u.r < minx ? 1 : 0);
+		int isouty = (u.g >= maxy ? 1 : 0) | (u.g < miny ? 1 : 0);
+		int isoutz = (u.b >= maxz ? 1 : 0) | (u.b < minz ? 1 : 0);
+
+		int dx = isoutx * (u.r - cx);
+		int dy = isouty * (u.g - cy);
+		int dz = isoutz * (u.b - cz);
+
+		//this distance is accurate if the color value is not within any min max range
+		int distancesqr = dx*dx + dy*dy + dz*dz;
 		
 		return SuperColor.getDist(u, nearest) > distancesqr;
 	}	
@@ -238,21 +209,18 @@ public class Quadtree
 			}
 			return nearest;
 		} else {
+			
+			int bestChild = 4 * (u.r > midx ? 1 : 0)
+						+	2 * (u.g > midy ? 1 : 0)
+						+		(u.b > midz ? 1 : 0);
+			
+			nearest = children[bestChild].findNearest(u, nearest);
+			
 			for(int c = 0; c < 8; c++)
 			{
-				SuperColor temp = children[c].findNearest(u, nearest);
+				if(c == bestChild) continue;
 				
-				if(temp == null) continue;
-				
-				if(nearest == null)
-				{
-					nearest = temp;
-				} else {
-					if(SuperColor.getDist(u, temp) < SuperColor.getDist(u, nearest))
-					{
-						nearest = temp;
-					}
-				}
+				nearest = children[c].findNearest(u, nearest);
 			}
 			return nearest;
 		}
